@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hitzone - Dashboard</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Inter Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        val: {
+                            red: '#FF4655',
+                            dark: '#0F1923',
+                            bg: '#050505'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #050505;
+            color: #ffffff;
+            overflow: hidden;
+        }
+
+        /* Glassmorphism Fintoc/Apple Style */
+        .glass-panel {
+            background: rgba(20, 20, 22, 0.6);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 1.25rem;
+            transition: all 0.3s ease;
+        }
+        .glass-card:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(255, 70, 85, 0.2);
+        }
+
+        .sidebar-item {
+            transition: all 0.2s ease;
+            border-left: 3px solid transparent;
+        }
+        .sidebar-item:hover, .sidebar-item.active {
+            background: rgba(255, 70, 85, 0.08);
+            color: #FF4655;
+            border-left: 3px solid #FF4655;
+        }
+        
+        .btn-primary {
+            background: #FF4655;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(255, 70, 85, 0.4);
+            background: #ff5c69;
+        }
+
+        .input-apple {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        .input-apple:focus {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: #FF4655;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(255, 70, 85, 0.15);
+        }
+
+        /* Progress bars */
+        .progress-bar-bg { background: rgba(255,255,255,0.1); border-radius: 99px; overflow: hidden; height: 8px;}
+        .progress-fill { height: 100%; border-radius: 99px; }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
+
+        /* Fintoc style table */
+        .fintoc-table th {
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+            color: #8b978f;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 0.75rem;
+        }
+        .fintoc-table td {
+            padding: 1rem 0;
+            border-bottom: 1px solid rgba(255,255,255,0.03);
+            font-size: 0.875rem;
+        }
+    </style>
+</head>
+<body class="flex h-screen w-full">
+
+    <!-- Sidebar -->
+    <aside class="w-64 glass-panel flex flex-col z-20 shrink-0">
+        <div class="h-16 flex items-center px-6 border-b border-white/5">
+            <div class="w-8 h-8 rounded bg-val-red flex items-center justify-center mr-3 shadow-lg shadow-val-red/30">
+                <i class="ph ph-crosshair text-white font-bold"></i>
+            </div>
+            <h1 class="font-bold text-xl tracking-tight">HITZONE</h1>
+        </div>
+
+        <div class="flex-1 overflow-y-auto py-6 px-3 flex flex-col gap-1">
+            <p class="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Principal</p>
+            <a href="dashboard.html" class="sidebar-item active flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-white mb-1">
+                <i class="ph ph-squares-four text-lg"></i> Dashboard
+            </a>
+            <a href="#" onclick="openModal()" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-400 hover:text-white mb-1">
+                <i class="ph ph-plus-circle text-lg"></i> Nueva Sesión
+            </a>
+            <a href="history.html" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-400 hover:text-white mb-1">
+                <i class="ph ph-clock-counter-clockwise text-lg"></i> Historial
+            </a>
+
+            <p class="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider mt-4 mb-2">Arsenal & Stats</p>
+            <a href="weapons.html" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-400 hover:text-white mb-1">
+                <i class="ph ph-sword text-lg"></i> Armas
+            </a>
+            <a href="agents.html" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-400 hover:text-white mb-1">
+                <i class="ph ph-users text-lg"></i> Agentes
+            </a>
+            <a href="maps.html" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-400 hover:text-white mb-1">
+                <i class="ph ph-map-trifold text-lg"></i> Mapas
+            </a>
+            <a href="global.html" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-400 hover:text-white mb-1">
+                <i class="ph ph-chart-line-up text-lg"></i> Resumen Global
+            </a>
+            <a href="rankings.html" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-400 hover:text-white mb-1">
+                <i class="ph ph-trophy text-lg"></i> Top Rankings
+            </a>
+
+            <!-- Sección Admin (Oculta por defecto) -->
+            <div id="adminMenu" class="hidden">
+                <p class="px-3 text-xs font-semibold text-val-red uppercase tracking-wider mt-4 mb-2 flex items-center gap-2">
+                    <i class="ph-fill ph-shield-check"></i> Administración
+                </p>
+                <a href="weapons.html" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-400 hover:text-white mb-1">
+                    <i class="ph ph-database text-lg"></i> Gestión de Armas
+                </a>
+                <a href="users.html" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-400 hover:text-white mb-1">
+                    <i class="ph ph-user-gear text-lg"></i> Gestión Usuarios
+                </a>
+                <a href="settings.html" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-400 hover:text-white mb-1">
+                    <i class="ph ph-sliders text-lg"></i> Ajustes Sistema
+                </a>
+            </div>
+        </div>
+
+        <div class="p-4 border-t border-white/5">
+            <a href="settings.html" class="sidebar-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-400 hover:text-white">
+                <i class="ph ph-gear text-lg"></i> Ajustes
+            </a>
+            <button onclick="logout()" class="w-full mt-2 flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-red-400 hover:bg-red-500/10 hover:text-red-300 transition-colors">
+                <i class="ph ph-sign-out text-lg"></i> Cerrar Sesión
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col h-screen overflow-hidden bg-[url('https://images.contentstack.io/v3/assets/bltb6530b271fddd0b1/bltab892ce01d51119b/5eb7cdc1b1f2e0220a597a7d/V_AGENTS_5873x3286_Jett_Default.png')] bg-cover bg-no-repeat bg-[center_top_-150px]">
+        <div class="absolute inset-0 bg-val-bg/95 backdrop-blur-[2px] z-0"></div> <!-- Overlay para legibilidad -->
+
+        <!-- Topbar -->
+        <header class="h-16 glass-panel flex items-center justify-between px-8 z-10 relative">
+            <h2 class="text-xl font-semibold tracking-tight">Overview General</h2>
+            
+            <div class="flex items-center gap-6">
+                <button class="relative text-gray-400 hover:text-white transition-colors">
+                    <i class="ph ph-bell text-xl"></i>
+                    <span class="absolute -top-1 -right-1 w-2.5 h-2.5 bg-val-red rounded-full border-2 border-val-bg"></span>
+                </button>
+                
+                <div class="h-6 w-px bg-white/10"></div>
+                
+                <div class="flex items-center gap-3 cursor-pointer group">
+                    <div class="text-right">
+                        <p id="userNameDisplay" class="text-sm font-semibold group-hover:text-val-red transition-colors">Cargando...</p>
+                        <p id="userRoleBadge" class="text-[10px] font-bold text-gray-400 uppercase tracking-widest bg-white/5 px-2 py-0.5 rounded inline-block mt-0.5">USER</p>
+                    </div>
+                    <div id="userAvatar" class="w-9 h-9 rounded-full bg-gradient-to-tr from-gray-700 to-gray-500 flex items-center justify-center font-bold text-sm shadow-inner">
+                        --
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Scrollable Dashboard -->
+        <div class="flex-1 overflow-y-auto p-8 z-10 relative">
+            <div class="max-w-7xl mx-auto space-y-8">
+                
+                <!-- Metrics -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="glass-card p-5">
+                        <p class="text-gray-400 text-sm font-medium mb-1">KD Ratio</p>
+                        <div class="flex items-end justify-between">
+                            <h3 class="text-3xl font-bold">1.42</h3>
+                            <span class="text-emerald-400 text-xs font-bold bg-emerald-400/10 px-2 py-1 rounded flex items-center gap-1">
+                                <i class="ph-bold ph-trend-up"></i> +0.12
+                            </span>
+                        </div>
+                    </div>
+                    <div class="glass-card p-5">
+                        <p class="text-gray-400 text-sm font-medium mb-1">Accuracy %</p>
+                        <div class="flex items-end justify-between">
+                            <h3 class="text-3xl font-bold">28.5%</h3>
+                            <span class="text-emerald-400 text-xs font-bold bg-emerald-400/10 px-2 py-1 rounded flex items-center gap-1">
+                                <i class="ph-bold ph-trend-up"></i> +2.1%
+                            </span>
+                        </div>
+                    </div>
+                    <div class="glass-card p-5">
+                        <p class="text-gray-400 text-sm font-medium mb-1">Total Sesiones</p>
+                        <div class="flex items-end justify-between">
+                            <h3 class="text-3xl font-bold">148</h3>
+                            <span class="text-gray-400 text-xs font-medium px-2 py-1">Esta semana: 12</span>
+                        </div>
+                    </div>
+                    <div class="glass-card p-5">
+                        <p class="text-gray-400 text-sm font-medium mb-1">Headshot %</p>
+                        <div class="flex items-end justify-between">
+                            <h3 class="text-3xl font-bold">22.1%</h3>
+                            <span class="text-red-400 text-xs font-bold bg-red-400/10 px-2 py-1 rounded flex items-center gap-1">
+                                <i class="ph-bold ph-trend-down"></i> -1.4%
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Content Grids -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    
+                    <!-- Left Column -->
+                    <div class="space-y-6">
+                        <!-- Top Combos -->
+                        <div class="glass-card p-6">
+                            <h3 class="text-lg font-semibold mb-4 flex items-center gap-2"><i class="ph-fill ph-star text-val-red"></i> Mejores Combinaciones</h3>
+                            <div class="space-y-4">
+                                <div class="flex items-center justify-between p-3 bg-white/5 rounded-xl border border-white/5">
+                                    <div class="flex items-center gap-4">
+                                        <div class="text-2xl">🗡️</div>
+                                        <div>
+                                            <p class="font-semibold text-sm">Vandal + Jett + Ascent</p>
+                                            <p class="text-xs text-gray-400">42 Sesiones jugadas</p>
+                                        </div>
+                                    </div>
+                                    <div class="text-right">
+                                        <p class="text-emerald-400 font-bold">1.85 KD</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center justify-between p-3 bg-white/5 rounded-xl border border-white/5">
+                                    <div class="flex items-center gap-4">
+                                        <div class="text-2xl">👻</div>
+                                        <div>
+                                            <p class="font-semibold text-sm">Phantom + Omen + Bind</p>
+                                            <p class="text-xs text-gray-400">28 Sesiones jugadas</p>
+                                        </div>
+                                    </div>
+                                    <div class="text-right">
+                                        <p class="text-emerald-400 font-bold">1.62 KD</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center justify-between p-3 bg-white/5 rounded-xl border border-white/5">
+                                    <div class="flex items-center gap-4">
+                                        <div class="text-2xl">🎯</div>
+                                        <div>
+                                            <p class="font-semibold text-sm">Operator + Chamber + Pearl</p>
+                                            <p class="text-xs text-gray-400">15 Sesiones jugadas</p>
+                                        </div>
+                                    </div>
+                                    <div class="text-right">
+                                        <p class="text-emerald-400 font-bold">1.50 KD</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Recent Sessions -->
+                        <div class="glass-card p-6">
+                            <h3 class="text-lg font-semibold mb-4 flex items-center gap-2"><i class="ph-fill ph-clock-counter-clockwise text-indigo-400"></i> Sesiones Recientes</h3>
+                            <div class="space-y-4">
+                                <!-- Session Item -->
+                                <div class="flex justify-between items-center pb-3 border-b border-white/5">
+                                    <div>
+                                        <p class="font-medium text-sm">Haven <span class="text-gray-500 mx-1">•</span> Reyna <span class="text-gray-500 mx-1">•</span> Vandal</p>
+                                        <p class="text-xs text-gray-400 mt-0.5">Hace 2 horas — 24 rondas</p>
+                                    </div>
+                                    <div class="text-right">
+                                        <p class="font-bold text-sm">22 / 14 <span class="text-gray-500 text-xs font-normal">K/D</span></p>
+                                        <p class="text-xs text-emerald-400">30% Acc</p>
+                                    </div>
+                                </div>
+                                <div class="flex justify-between items-center pb-3 border-b border-white/5">
+                                    <div>
+                                        <p class="font-medium text-sm">Split <span class="text-gray-500 mx-1">•</span> Raze <span class="text-gray-500 mx-1">•</span> Phantom</p>
+                                        <p class="text-xs text-gray-400 mt-0.5">Ayer — 19 rondas</p>
+                                    </div>
+                                    <div class="text-right">
+                                        <p class="font-bold text-sm">18 / 15 <span class="text-gray-500 text-xs font-normal">K/D</span></p>
+                                        <p class="text-xs text-gray-400">25% Acc</p>
+                                    </div>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <div>
+                                        <p class="font-medium text-sm">Lotus <span class="text-gray-500 mx-1">•</span> Killjoy <span class="text-gray-500 mx-1">•</span> Vandal</p>
+                                        <p class="text-xs text-gray-400 mt-0.5">Hace 2 días — 21 rondas</p>
+                                    </div>
+                                    <div class="text-right">
+                                        <p class="font-bold text-sm text-red-400">10 / 18 <span class="text-gray-500 text-xs font-normal">K/D</span></p>
+                                        <p class="text-xs text-red-400">18% Acc</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Column -->
+                    <div class="space-y-6">
+                        <!-- Performance Bars -->
+                        <div class="glass-card p-6">
+                            <h3 class="text-lg font-semibold mb-4 flex items-center gap-2"><i class="ph-fill ph-chart-bar text-emerald-400"></i> Rendimiento por Categoría</h3>
+                            <div class="space-y-5">
+                                <div>
+                                    <div class="flex justify-between text-sm mb-1.5">
+                                        <span class="font-medium text-gray-300">Rifles</span>
+                                        <span class="font-bold">32% Acc</span>
+                                    </div>
+                                    <div class="progress-bar-bg"><div class="progress-fill bg-val-red w-[32%]"></div></div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-sm mb-1.5">
+                                        <span class="font-medium text-gray-300">Snipers</span>
+                                        <span class="font-bold">45% Acc</span>
+                                    </div>
+                                    <div class="progress-bar-bg"><div class="progress-fill bg-indigo-500 w-[45%]"></div></div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-sm mb-1.5">
+                                        <span class="font-medium text-gray-300">SMGs</span>
+                                        <span class="font-bold">18% Acc</span>
+                                    </div>
+                                    <div class="progress-bar-bg"><div class="progress-fill bg-purple-500 w-[18%]"></div></div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-sm mb-1.5">
+                                        <span class="font-medium text-gray-300">Pistols</span>
+                                        <span class="font-bold">25% Acc</span>
+                                    </div>
+                                    <div class="progress-bar-bg"><div class="progress-fill bg-emerald-500 w-[25%]"></div></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Global Analytics -->
+                        <div class="glass-card p-6 bg-gradient-to-br from-white/[0.02] to-indigo-500/[0.05]">
+                            <h3 class="text-lg font-semibold mb-4 flex items-center gap-2"><i class="ph-fill ph-globe text-blue-400"></i> Global Analytics (Plataforma)</h3>
+                            <div class="grid grid-cols-3 gap-4 text-center">
+                                <div class="p-3 bg-black/20 rounded-xl">
+                                    <p class="text-xs text-gray-400 mb-1">Mapa más jugado</p>
+                                    <p class="font-bold text-sm">Ascent</p>
+                                    <p class="text-[10px] text-val-red mt-1">45k Partidas</p>
+                                </div>
+                                <div class="p-3 bg-black/20 rounded-xl">
+                                    <p class="text-xs text-gray-400 mb-1">Arma Letal</p>
+                                    <p class="font-bold text-sm">Vandal</p>
+                                    <p class="text-[10px] text-val-red mt-1">68% Pickrate</p>
+                                </div>
+                                <div class="p-3 bg-black/20 rounded-xl">
+                                    <p class="text-xs text-gray-400 mb-1">Top Agente</p>
+                                    <p class="font-bold text-sm">Reyna</p>
+                                    <p class="text-[10px] text-val-red mt-1">1.2 Avg KD</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CTAs -->
+                <div class="flex gap-4 justify-end border-t border-white/5 pt-6 pb-4">
+                    <button class="px-6 py-3 rounded-xl font-medium text-sm text-gray-300 hover:text-white hover:bg-white/5 transition-colors border border-white/10">
+                        Ver analytics completos
+                    </button>
+                    <button onclick="openModal()" class="btn-primary px-8 py-3 rounded-xl font-semibold text-sm text-white shadow-lg flex items-center gap-2">
+                        <i class="ph-bold ph-plus"></i> Iniciar nueva sesión
+                    </button>
+                </div>
+
+
+
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal Nueva Sesión -->
+    <div id="sessionModal" class="fixed inset-0 z-50 flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" onclick="closeModal()"></div>
+        <div class="glass-panel w-full max-w-md p-8 rounded-[2rem] relative transform scale-95 transition-transform duration-300" id="modalContent">
+            <h3 class="text-2xl font-bold mb-2">Nueva Sesión</h3>
+            <p class="text-sm text-gray-400 mb-6">Registra los datos de tu nueva partida.</p>
+            
+            <form id="sessionForm" class="space-y-4">
+                <div class="space-y-1.5">
+                    <label class="text-xs font-semibold text-gray-400 ml-1 uppercase">Mapa</label>
+                    <select class="input-apple w-full px-4 py-3 rounded-xl text-white appearance-none" required>
+                        <option value="" disabled selected>Selecciona un mapa</option>
+                        <option value="ascent">Ascent</option>
+                        <option value="bind">Bind</option>
+                        <option value="haven">Haven</option>
+                        <option value="split">Split</option>
+                        <option value="pearl">Pearl</option>
+                        <option value="lotus">Lotus</option>
+                        <option value="fracture">Fracture</option>
+                    </select>
+                </div>
+                
+                <div class="space-y-1.5">
+                    <label class="text-xs font-semibold text-gray-400 ml-1 uppercase">Agente</label>
+                    <select class="input-apple w-full px-4 py-3 rounded-xl text-white appearance-none" required>
+                        <option value="" disabled selected>Selecciona un agente</option>
+                        <option value="jett">Jett</option>
+                        <option value="reyna">Reyna</option>
+                        <option value="raze">Raze</option>
+                        <option value="omen">Omen</option>
+                        <option value="killjoy">Killjoy</option>
+                        <option value="chamber">Chamber</option>
+                        <option value="sova">Sova</option>
+                        <option value="sage">Sage</option>
+                    </select>
+                </div>
+
+                <div class="space-y-1.5">
+                    <label class="text-xs font-semibold text-gray-400 ml-1 uppercase">Arma Principal</label>
+                    <select class="input-apple w-full px-4 py-3 rounded-xl text-white appearance-none" required>
+                        <option value="" disabled selected>Selecciona un arma</option>
+                        <option value="vandal">Vandal</option>
+                        <option value="phantom">Phantom</option>
+                        <option value="operator">Operator</option>
+                        <option value="spectre">Spectre</option>
+                        <option value="judge">Judge</option>
+                        <option value="sheriff">Sheriff</option>
+                        <option value="ghost">Ghost</option>
+                        <option value="classic">Classic</option>
+                        <option value="odin">Odin</option>
+                        <option value="ares">Ares</option>
+                    </select>
+                </div>
+
+                <div class="pt-6 flex gap-3">
+                    <button type="button" onclick="closeModal()" class="flex-1 py-3.5 rounded-xl font-semibold text-white bg-white/5 hover:bg-white/10 transition-colors">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="flex-1 btn-primary py-3.5 rounded-xl font-semibold text-white shadow-xl">
+                        Iniciar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+
+    <!-- Toast -->
+    <div id="toast" class="fixed bottom-8 right-8 px-6 py-4 rounded-xl text-sm font-medium opacity-0 transition-all duration-300 z-50 glass-panel flex items-center gap-3 translate-y-4 pointer-events-none">
+        <div class="w-8 h-8 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
+            <i class="ph-bold ph-check"></i>
+        </div>
+        <span class="text-white">Sesión registrada exitosamente.</span>
+    </div>
+
+    <script src="/js/api.js"></script>
+    <script src="/js/dashboard.js"></script>
+</body>
+</html>

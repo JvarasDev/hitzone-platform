@@ -1,0 +1,13 @@
+server:
+  port: 8761
+
+eureka:
+  instance:
+    hostname: localhost
+  client:
+    # Un Eureka Server no debe registrarse a sí mismo como si fuera un microservicio
+    registerWithEureka: false
+    # Un Eureka Server no necesita descargar la lista de servidores
+    fetchRegistry: false
+    serviceUrl:
+      defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka/

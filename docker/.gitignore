@@ -1,0 +1,11 @@
+.env
+**/target/
+**/*.class
+**/*.jar
+.idea/
+**/.idea/
+.iml
+**/*.iml
+.vscode/
+.DS_Store
+Thumbs.db

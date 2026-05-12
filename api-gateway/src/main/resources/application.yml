@@ -1,0 +1,70 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: api-gateway
+  config:
+    import: optional:configserver:http://localhost:8888
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+      routes:
+        - id: ms-auth-route
+          uri: lb://ms-auth
+          predicates:
+            - Path=/api/auth/**, /api/users/**
+
+        - id: ms-weapons-route
+          uri: lb://ms-weapon
+          predicates:
+            - Path=/api/weapons/**
+
+        - id: ms-agents-route
+          uri: lb://ms-agents
+          predicates:
+            - Path=/api/agents/**
+
+        - id: ms-maps-route
+          uri: lb://ms-maps
+          predicates:
+            - Path=/api/maps/**
+
+        - id: ms-training-route
+          uri: lb://ms-training-engine
+          predicates:
+            - Path=/api/training/**
+
+        - id: ms-analytics-route
+          uri: lb://ms-analytics-core
+          predicates:
+            - Path=/api/analytics/**
+
+        - id: ms-stats-maps-route
+          uri: lb://ms-stats-maps
+          predicates:
+            - Path=/api/stats/maps/**
+
+        - id: ms-stats-weapons-route
+          uri: lb://ms-stats-weapons
+          predicates:
+            - Path=/api/stats/weapons/**
+
+        - id: ms-stats-agents-route
+          uri: lb://ms-stats-agents
+          predicates:
+            - Path=/api/stats/agents/**
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    prefer-ip-address: true
+
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG

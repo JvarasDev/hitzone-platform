@@ -1,0 +1,31 @@
+# Propiedades del microservicio ms-auth
+spring:
+  application:
+    name: ms-auth
+  datasource:
+    url: jdbc:postgresql://localhost:5432/db_hitbox_auth
+    username: postgres
+    password: HitzonePassword123!
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  # Fail-fast: el microservicio fallará rápido si el config-server no está disponible
+  cloud:
+    config:
+      fail-fast: true
+      uri: http://localhost:8888
+
+server:
+  port: 8081
+
+# JWT settings
+jwt:
+  secret: hitzone-super-secret-key-2026
+  expiration-ms: 86400000   # 24 horas
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/

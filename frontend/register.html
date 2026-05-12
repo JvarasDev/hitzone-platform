@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hitzone - Crear Cuenta</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #050505;
+            color: #ffffff;
+            overflow-x: hidden;
+            margin: 0;
+            padding: 0;
+        }
+
+        .glass-panel {
+            background: rgba(20, 20, 22, 0.4);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255,255,255,0.1);
+        }
+
+        /* Orbs — mismo sistema que login.html */
+        .orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(90px);
+            z-index: -1;
+            animation: float 12s infinite alternate ease-in-out;
+            opacity: 0.6;
+            pointer-events: none;
+        }
+        .orb-1 {
+            width: 500px; height: 500px;
+            background: rgba(99, 102, 241, 0.3);
+            top: -180px; left: -120px;
+        }
+        .orb-2 {
+            width: 380px; height: 380px;
+            background: rgba(168, 85, 247, 0.2);
+            bottom: -80px; right: -120px;
+            animation-delay: -6s;
+        }
+        .orb-3 {
+            width: 260px; height: 260px;
+            background: rgba(59, 130, 246, 0.15);
+            bottom: 30%; left: 10%;
+            animation-delay: -3s;
+        }
+
+        @keyframes float {
+            0%   { transform: translate(0, 0) scale(1); }
+            50%  { transform: translate(30px, 50px) scale(1.05); }
+            100% { transform: translate(-20px, 20px) scale(0.95); }
+        }
+
+        .input-apple {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .input-apple:focus {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(99, 102, 241, 0.6);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15), inset 0 2px 4px rgba(0,0,0,0.1);
+            outline: none;
+        }
+        .input-apple.input-valid {
+            border-color: rgba(16, 185, 129, 0.5);
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+        }
+        .input-apple.input-error {
+            border-color: rgba(239, 68, 68, 0.5);
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .btn-primary:not(:disabled):hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(124, 58, 237, 0.5);
+            filter: brightness(1.1);
+        }
+        .btn-primary:not(:disabled):active {
+            transform: translateY(0);
+        }
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Password strength bar */
+        .strength-bar {
+            height: 3px;
+            border-radius: 9999px;
+            background: rgba(255,255,255,0.08);
+            overflow: hidden;
+        }
+        .strength-fill {
+            height: 100%;
+            border-radius: 9999px;
+            transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1), background 0.4s ease;
+        }
+
+        /* Requisito check items */
+        .req-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            font-weight: 500;
+            color: rgba(156, 163, 175, 0.7);
+            transition: color 0.25s ease;
+        }
+        .req-item.met {
+            color: #34d399;
+        }
+        .req-dot {
+            width: 5px; height: 5px;
+            border-radius: 50%;
+            background: rgba(156, 163, 175, 0.3);
+            flex-shrink: 0;
+            transition: background 0.25s ease, transform 0.25s ease;
+        }
+        .req-item.met .req-dot {
+            background: #34d399;
+            transform: scale(1.3);
+        }
+
+        /* Toast */
+        .toast-enter {
+            animation: slideDown 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        @keyframes slideDown {
+            from { transform: translate(-50%, -150%); opacity: 0; }
+            to   { transform: translate(-50%, 0);     opacity: 1; }
+        }
+
+        /* Field error text slide-in */
+        .field-error {
+            font-size: 11px;
+            color: #f87171;
+            margin-top: 4px;
+            padding-left: 4px;
+            animation: errorIn 0.2s ease forwards;
+        }
+        @keyframes errorIn {
+            from { opacity: 0; transform: translateY(-4px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center py-10 relative w-full">
+
+    <!-- Background Orbs (mismo sistema que login) -->
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+
+    <!-- Toast -->
+    <div id="toast" class="fixed top-6 left-1/2 transform -translate-x-1/2 px-6 py-3.5 rounded-full text-sm font-medium opacity-0 transition-opacity duration-300 z-50 glass-panel flex items-center gap-3 hidden" style="white-space:nowrap">
+        <span id="toast-icon" class="text-lg"></span>
+        <span id="toast-message" class="text-gray-100"></span>
+    </div>
+
+    <!-- Card -->
+    <div class="glass-panel p-8 sm:p-10 rounded-[2rem] w-full max-w-[440px] mx-4">
+
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <div class="w-12 h-12 rounded-xl bg-gradient-to-tr from-indigo-500 to-purple-500 mx-auto mb-5 shadow-lg flex items-center justify-center">
+                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                </svg>
+            </div>
+            <h1 class="text-2xl sm:text-3xl font-bold tracking-tight mb-2 text-white">Crear cuenta</h1>
+            <p class="text-gray-400 text-sm font-medium">Únete a Hitzone hoy mismo</p>
+        </div>
+
+        <!-- Form -->
+        <form id="registerForm" novalidate class="space-y-5">
+
+            <!-- Username -->
+            <div class="space-y-1.5">
+                <label for="username" class="text-xs font-semibold text-gray-400 ml-1 tracking-wide uppercase">Usuario</label>
+                <input type="text" id="username" name="username" required autocomplete="username"
+                    class="input-apple w-full px-4 py-3.5 rounded-xl text-white placeholder-gray-600 font-medium"
+                    placeholder="ej. juanperez">
+                <p id="username-error" class="field-error hidden"></p>
+            </div>
+
+            <!-- Email -->
+            <div class="space-y-1.5">
+                <label for="email" class="text-xs font-semibold text-gray-400 ml-1 tracking-wide uppercase">Correo electrónico</label>
+                <input type="email" id="email" name="email" required autocomplete="email"
+                    class="input-apple w-full px-4 py-3.5 rounded-xl text-white placeholder-gray-600 font-medium"
+                    placeholder="ej. juan@correo.com">
+                <p id="email-error" class="field-error hidden"></p>
+            </div>
+
+            <!-- Password -->
+            <div class="space-y-2">
+                <label for="password" class="text-xs font-semibold text-gray-400 ml-1 tracking-wide uppercase">Contraseña</label>
+                <input type="password" id="password" name="password" required autocomplete="new-password"
+                    class="input-apple w-full px-4 py-3.5 rounded-xl text-white placeholder-gray-600 font-medium tracking-widest"
+                    placeholder="••••••••">
+                <!-- Strength bar -->
+                <div class="strength-bar mx-1">
+                    <div id="strength-fill" class="strength-fill" style="width:0%;background:#4b5563"></div>
+                </div>
+                <!-- Requirements grid -->
+                <div class="grid grid-cols-2 gap-x-4 gap-y-1.5 px-1 pt-1">
+                    <span class="req-item" id="req-length"><span class="req-dot"></span>8–128 caracteres</span>
+                    <span class="req-item" id="req-upper"><span class="req-dot"></span>Una mayúscula</span>
+                    <span class="req-item" id="req-lower"><span class="req-dot"></span>Una minúscula</span>
+                    <span class="req-item" id="req-number"><span class="req-dot"></span>Un número</span>
+                    <span class="req-item col-span-2" id="req-special"><span class="req-dot"></span>Un carácter especial (@$!%*?&)</span>
+                </div>
+                <p id="password-error" class="field-error hidden"></p>
+            </div>
+
+            <!-- Submit -->
+            <div class="pt-3">
+                <button type="submit" id="submitBtn" disabled
+                    class="btn-primary w-full py-4 rounded-xl font-semibold text-white shadow-xl relative flex justify-center items-center">
+                    <span id="btnText">Crear cuenta</span>
+                    <svg id="btnLoader" class="animate-spin h-5 w-5 absolute hidden text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                </button>
+            </div>
+        </form>
+
+        <div class="mt-7 text-center">
+            <p class="text-sm text-gray-400 font-medium">
+                ¿Ya tienes cuenta?
+                <a href="/login.html" class="text-indigo-400 hover:text-indigo-300 font-semibold transition-colors ml-1">Iniciar sesión</a>
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // ── Detectar file:// ──────────────────────────────────────────────────
+        const isFileProtocol = window.location.protocol === 'file:';
+        if (isFileProtocol) {
+            const banner = document.createElement('div');
+            banner.style.cssText = `
+                position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+                background: rgba(245,158,11,0.15); border: 1px solid rgba(245,158,11,0.4);
+                backdrop-filter: blur(16px); color: #fcd34d; font-size: 13px; font-weight: 500;
+                padding: 12px 20px; border-radius: 12px; text-align: center;
+                z-index: 999; max-width: 380px; line-height: 1.6;
+            `;
+            banner.innerHTML = '⚠️ Abre desde el servidor para conectar al backend:<br><strong style="color:#fde68a">http://localhost:8080/register.html</strong>';
+            document.body.appendChild(banner);
+        }
+
+        const API_URL = isFileProtocol
+            ? 'http://localhost:8080/api/auth/register'
+            : '/api/auth/register';
+
+        // ── Validación en tiempo real ─────────────────────────────────────────
+        const passwordInput = document.getElementById('password');
+        const strengthFill  = document.getElementById('strength-fill');
+        const submitBtn     = document.getElementById('submitBtn');
+
+        const reqs = {
+            length:  { el: document.getElementById('req-length'),  test: v => v.length >= 8 && v.length <= 128 },
+            upper:   { el: document.getElementById('req-upper'),   test: v => /[A-Z]/.test(v) },
+            lower:   { el: document.getElementById('req-lower'),   test: v => /[a-z]/.test(v) },
+            number:  { el: document.getElementById('req-number'),  test: v => /\d/.test(v) },
+            special: { el: document.getElementById('req-special'), test: v => /[@$!%*?&]/.test(v) },
+        };
+
+        const strengthColors = ['#4b5563', '#ef4444', '#f59e0b', '#a3e635', '#10b981'];
+        const strengthLabels = ['', 'Muy débil', 'Débil', 'Buena', 'Fuerte'];
+
+        passwordInput.addEventListener('input', () => {
+            const val = passwordInput.value;
+            let metCount = 0;
+
+            Object.values(reqs).forEach(r => {
+                const ok = r.test(val);
+                if (ok) metCount++;
+                r.el.classList.toggle('met', ok);
+            });
+
+            const pct = (metCount / 5) * 100;
+            strengthFill.style.width = `${pct}%`;
+            strengthFill.style.background = strengthColors[metCount];
+
+            updateSubmitState();
+        });
+
+        // Validar username y email on blur
+        document.getElementById('username').addEventListener('blur', validateUsername);
+        document.getElementById('email').addEventListener('blur', validateEmail);
+        document.getElementById('username').addEventListener('input', () => {
+            clearFieldError('username');
+            updateSubmitState();
+        });
+        document.getElementById('email').addEventListener('input', () => {
+            clearFieldError('email');
+            updateSubmitState();
+        });
+
+        function validateUsername() {
+            const val = document.getElementById('username').value.trim();
+            if (!val) return showFieldError('username', 'El nombre de usuario es obligatorio');
+            if (val.length < 3) return showFieldError('username', 'Mínimo 3 caracteres');
+            clearFieldError('username');
+            markValid('username');
+        }
+
+        function validateEmail() {
+            const val = document.getElementById('email').value.trim();
+            const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!val) return showFieldError('email', 'El correo es obligatorio');
+            if (!emailRe.test(val)) return showFieldError('email', 'Formato de correo inválido (usuario@dominio.com)');
+            clearFieldError('email');
+            markValid('email');
+        }
+
+        function showFieldError(field, msg) {
+            const input = document.getElementById(field);
+            const error = document.getElementById(`${field}-error`);
+            input.classList.remove('input-valid');
+            input.classList.add('input-error');
+            error.textContent = msg;
+            error.classList.remove('hidden');
+        }
+
+        function clearFieldError(field) {
+            const input = document.getElementById(field);
+            const error = document.getElementById(`${field}-error`);
+            input.classList.remove('input-error');
+            error.classList.add('hidden');
+        }
+
+        function markValid(field) {
+            const input = document.getElementById(field);
+            input.classList.add('input-valid');
+        }
+
+        function allPasswordReqsMet() {
+            return Object.values(reqs).every(r => r.test(passwordInput.value));
+        }
+
+        function updateSubmitState() {
+            const username = document.getElementById('username').value.trim();
+            const email    = document.getElementById('email').value.trim();
+            const emailRe  = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            const ok = username.length >= 3 && emailRe.test(email) && allPasswordReqsMet();
+            submitBtn.disabled = !ok;
+        }
+
+        // ── Submit ────────────────────────────────────────────────────────────
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            // Forzar validación de todos los campos antes de enviar
+            validateUsername();
+            validateEmail();
+            if (!allPasswordReqsMet()) {
+                showToast('La contraseña no cumple los requisitos', 'error');
+                return;
+            }
+            const usernameError = document.getElementById('username-error');
+            const emailError    = document.getElementById('email-error');
+            if (!usernameError.classList.contains('hidden') || !emailError.classList.contains('hidden')) return;
+
+            const btnText   = document.getElementById('btnText');
+            const btnLoader = document.getElementById('btnLoader');
+
+            // Loading
+            btnText.classList.add('hidden');
+            btnLoader.classList.remove('hidden');
+            submitBtn.disabled = true;
+
+            const payload = {
+                username: document.getElementById('username').value.trim(),
+                email:    document.getElementById('email').value.trim(),
+                password: passwordInput.value,
+            };
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                    body: JSON.stringify(payload),
+                });
+
+                if (response.ok) {
+                    showToast(`¡Cuenta creada! Redirigiendo…`, 'success');
+                    submitBtn.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
+                    btnLoader.classList.add('hidden');
+                    btnText.classList.remove('hidden');
+                    btnText.textContent = 'Cuenta creada ✓';
+                    setTimeout(() => { window.location.href = '/login.html'; }, 1800);
+                } else {
+                    const errorText = await response.text();
+                    showToast(errorText || 'Error al crear la cuenta', 'error');
+                    resetButton(btnText, btnLoader);
+                }
+            } catch (err) {
+                console.error(err);
+                showToast('Error conectando al servidor', 'error');
+                resetButton(btnText, btnLoader);
+            }
+        });
+
+        function resetButton(textEl, loaderEl) {
+            setTimeout(() => {
+                textEl.classList.remove('hidden');
+                loaderEl.classList.add('hidden');
+                updateSubmitState();
+            }, 600);
+        }
+
+        // ── Toast ─────────────────────────────────────────────────────────────
+        function showToast(message, type) {
+            const toast   = document.getElementById('toast');
+            const msgEl   = document.getElementById('toast-message');
+            const iconEl  = document.getElementById('toast-icon');
+            msgEl.textContent = message;
+            const styles = {
+                success: { icon: '✨', border: '#10b981' },
+                error:   { icon: '⚠️', border: '#ef4444' },
+                info:    { icon: '💡', border: '#6366f1' },
+            };
+            const s = styles[type] || styles.info;
+            iconEl.innerHTML = s.icon;
+            toast.style.borderBottom = `2px solid ${s.border}`;
+            toast.classList.remove('hidden');
+            void toast.offsetWidth;
+            toast.classList.add('toast-enter', 'opacity-100');
+            setTimeout(() => {
+                toast.classList.remove('opacity-100', 'toast-enter');
+                toast.classList.add('opacity-0');
+                setTimeout(() => { toast.classList.add('hidden'); toast.style.borderBottom = 'none'; }, 300);
+            }, 4000);
+        }
+    </script>
+</body>
+</html>

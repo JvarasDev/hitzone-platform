@@ -1,0 +1,32 @@
+# Propiedades del microservicio ms-weapons
+spring:
+  application:
+    name: ms-weapons
+  datasource:
+    url: jdbc:postgresql://aws-1-us-west-2.pooler.supabase.com:5432/postgres?sslmode=require
+    username: postgres.prexixehpjotlgfapwfb
+    password: H1tZ0n3p0sswo4db
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  # Fail-fast: el microservicio fallará rápido si el config-server no está disponible
+  cloud:
+    config:
+      fail-fast: true
+      uri: http://localhost:8888
+
+server:
+  port: 8082
+
+weapons:
+  cache:
+    ttl-seconds: 300
+  pagination:
+    default-page-size: 20
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
