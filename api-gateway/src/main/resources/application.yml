@@ -13,13 +13,24 @@ spring:
           enabled: true
           lower-case-service-id: true
       routes:
+        # ── ms-auth ─────────────────────────────────────────────────────────────
+        # Rutas internas reales del microservicio de autenticación
         - id: ms-auth-route
           uri: lb://ms-auth
           predicates:
             - Path=/api/auth/**, /api/users/**
 
+        # Alias /api/v1/auth/** → ms-auth (para compatibilidad con frontend)
+        - id: ms-auth-v1-route
+          uri: lb://ms-auth
+          predicates:
+            - Path=/api/v1/auth/**
+          filters:
+            - RewritePath=/api/v1/auth/(?<segment>.*), /api/auth/${segment}
+
+        # ── Microservicios de negocio ──────────────────────────────────────────
         - id: ms-weapons-route
-          uri: lb://ms-weapon
+          uri: lb://ms-weapons
           predicates:
             - Path=/api/weapons/**
 
@@ -33,30 +44,25 @@ spring:
           predicates:
             - Path=/api/maps/**
 
-        - id: ms-training-route
-          uri: lb://ms-training-engine
+        - id: ms-matches-route
+          uri: lb://ms-matches
           predicates:
-            - Path=/api/training/**
+            - Path=/api/matches/**
 
-        - id: ms-analytics-route
-          uri: lb://ms-analytics-core
+        - id: ms-news-route
+          uri: lb://ms-news
           predicates:
-            - Path=/api/analytics/**
+            - Path=/api/v1/news/**
 
-        - id: ms-stats-maps-route
-          uri: lb://ms-stats-maps
+        - id: ms-persistence-route
+          uri: lb://ms-persistence
           predicates:
-            - Path=/api/stats/maps/**
+            - Path=/api/v1/audit/**
 
-        - id: ms-stats-weapons-route
-          uri: lb://ms-stats-weapons
+        - id: ms-rank-route
+          uri: lb://ms-rank
           predicates:
-            - Path=/api/stats/weapons/**
-
-        - id: ms-stats-agents-route
-          uri: lb://ms-stats-agents
-          predicates:
-            - Path=/api/stats/agents/**
+            - Path=/api/v1/rank/**
 
 eureka:
   client:
@@ -68,3 +74,8 @@ eureka:
 logging:
   level:
     org.springframework.cloud.gateway: DEBUG
+    cl.hitzone.api_gateway.filter: DEBUG
+
+# Mismo secreto que ms-auth — CRÍTICO que sean idénticos
+jwt:
+  secret: hitzone-super-secret-key-2026-must-be-at-least-32-chars

@@ -7,12 +7,15 @@ import cl.hitzone.ms_agents.exception.DuplicateResourceException;
 import cl.hitzone.ms_agents.exception.ResourceNotFoundException;
 import cl.hitzone.ms_agents.model.Ability;
 import cl.hitzone.ms_agents.model.Agent;
+import cl.hitzone.ms_agents.model.AgentRole;
 import cl.hitzone.ms_agents.repository.AgentRepository;
 import cl.hitzone.ms_agents.service.AgentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -108,6 +111,29 @@ public class AgentServiceImpl implements AgentService {
             throw new ResourceNotFoundException("Agente no encontrado con ID: " + id);
         }
         agentRepository.deleteById(id);
+    }
+
+    @Override
+    public List<AgentResponseDTO> getAgentsByRole(AgentRole role) {
+        return agentRepository.findByRole(role).stream()
+                .map(this::mapToResponseDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public Map<AgentRole, Long> getAgentCountByRole() {
+        Map<AgentRole, Long> stats = new HashMap<>();
+        for (AgentRole role : AgentRole.values()) {
+            stats.put(role, 0L);
+        }
+        
+        agentRepository.countByRole().forEach(row -> {
+            AgentRole role = (AgentRole) row[0];
+            Long count = ((Number) row[1]).longValue();
+            stats.put(role, count);
+        });
+        
+        return stats;
     }
 
     private AgentResponseDTO mapToResponseDTO(Agent agent) {

@@ -220,81 +220,53 @@
                     <!-- Botón solo visible para ADMIN, controlado por JS -->
                     
                 </div>
-                
-                <div class="glass-card overflow-hidden">
-                    <table class="w-full text-left fintoc-table">
-                        <thead class="bg-black/40"><tr><th class="pl-6 pt-4 pb-4">Próximamente</th></tr></thead>
-                        <tbody id="mainTableBody" class="px-6"><tr><td class="pl-6 py-8 text-gray-400">Contenido en construcción...</td></tr></tbody>
-                    </table>
+                <div class="flex gap-4 mb-6">
+                    <div class="glass-card flex-1 p-4 flex items-center justify-between">
+                        <div>
+                            <p class="text-xs text-gray-500 uppercase tracking-widest font-bold">Kills Totales</p>
+                            <p id="totalKills" class="text-2xl font-bold text-emerald-400">0</p>
+                        </div>
+                        <i class="ph ph-crosshair text-3xl text-emerald-400/20"></i>
+                    </div>
+                    <div class="glass-card flex-1 p-4 flex items-center justify-between">
+                        <div>
+                            <p class="text-xs text-gray-500 uppercase tracking-widest font-bold">Muertes Totales</p>
+                            <p id="totalDeaths" class="text-2xl font-bold text-red-400">0</p>
+                        </div>
+                        <i class="ph ph-skull text-3xl text-red-400/20"></i>
+                    </div>
+                    <div class="glass-card flex-1 p-4 flex items-center justify-between">
+                        <div>
+                            <p class="text-xs text-gray-500 uppercase tracking-widest font-bold">Asistencias</p>
+                            <p id="totalAssists" class="text-2xl font-bold text-indigo-400">0</p>
+                        </div>
+                        <i class="ph ph-hands-clapping text-3xl text-indigo-400/20"></i>
+                    </div>
                 </div>
 
+                <div class="glass-card overflow-hidden">
+                    <table class="w-full text-left fintoc-table">
+                        <thead class="bg-black/40">
+                            <tr>
+                                <th class="pl-6 pt-4 pb-4">ID de Partida / Mapa</th>
+                                <th class="pt-4 pb-4">Resultado</th>
+                                <th class="pt-4 pb-4">Modo / Duración</th>
+                                <th class="pt-4 pb-4">KDA</th>
+                                <th class="pt-4 pb-4 pr-6 text-right">Agente</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historyTableBody">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </main>
 
 
 
-    <!-- Modal Arma -->
-    <div id="weaponModal" class="fixed inset-0 z-50 flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
-        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" onclick="closeWeaponModal()"></div>
-        <div class="glass-panel w-full max-w-md p-8 rounded-[2rem] relative transform scale-95 transition-transform duration-300" id="weaponModalContent">
-            <h3 id="weaponModalTitle" class="text-2xl font-bold mb-2">Nueva Arma</h3>
-            <p class="text-sm text-gray-400 mb-6">Registra las características del arma.</p>
-            
-            <form id="weaponForm" class="space-y-4">
-                <input type="hidden" id="weaponId">
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="space-y-1.5 col-span-2">
-                        <label class="text-xs font-semibold text-gray-400 ml-1 uppercase">Nombre</label>
-                        <input type="text" id="weaponName" class="input-apple w-full px-4 py-3 rounded-xl text-white" required placeholder="Ej: Vandal">
-                    </div>
 
-                    <div class="space-y-1.5">
-                        <label class="text-xs font-semibold text-gray-400 ml-1 uppercase">Categoría</label>
-                        <select id="weaponCategory" class="input-apple w-full px-4 py-3 rounded-xl text-white appearance-none" required>
-                            <option value="" disabled selected>Categoría</option>
-                            <option value="RIFLE">Rifle</option>
-                            <option value="SNIPER">Sniper</option>
-                            <option value="SMG">SMG</option>
-                            <option value="PISTOL">Pistol</option>
-                            <option value="HEAVY">Heavy</option>
-                            <option value="SHOTGUN">Shotgun</option>
-                            <option value="MELEE">Melee</option>
-                        </select>
-                    </div>
-
-                    <div class="space-y-1.5">
-                        <label class="text-xs font-semibold text-gray-400 ml-1 uppercase">Precio</label>
-                        <input type="number" id="weaponPrice" class="input-apple w-full px-4 py-3 rounded-xl text-white" required min="0" max="10000" placeholder="Ej: 2900">
-                    </div>
-
-                    <div class="space-y-1.5">
-                        <label class="text-xs font-semibold text-gray-400 ml-1 uppercase">Daño</label>
-                        <input type="number" id="weaponDamage" step="0.1" class="input-apple w-full px-4 py-3 rounded-xl text-white" required min="0" placeholder="Ej: 40">
-                    </div>
-
-                    <div class="space-y-1.5">
-                        <label class="text-xs font-semibold text-gray-400 ml-1 uppercase">Fire Rate</label>
-                        <input type="number" id="weaponFireRate" step="0.1" class="input-apple w-full px-4 py-3 rounded-xl text-white" required min="0" placeholder="Ej: 9.75">
-                    </div>
-
-                    <div class="space-y-1.5 col-span-2">
-                        <label class="text-xs font-semibold text-gray-400 ml-1 uppercase">Tamaño Cargador</label>
-                        <input type="number" id="weaponMagazine" class="input-apple w-full px-4 py-3 rounded-xl text-white" required min="0" placeholder="Ej: 25">
-                    </div>
-                </div>
-
-                <div class="pt-6 flex gap-3">
-                    <button type="button" onclick="closeWeaponModal()" class="flex-1 py-3.5 rounded-xl font-semibold text-white bg-white/5 hover:bg-white/10 transition-colors">
-                        Cancelar
-                    </button>
-                    <button type="submit" class="flex-1 btn-primary py-3.5 rounded-xl font-semibold text-white shadow-xl">
-                        Guardar
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
 
     <!-- Toast -->
     <div id="toast" class="fixed bottom-8 right-8 px-6 py-4 rounded-xl text-sm font-medium opacity-0 transition-all duration-300 z-50 glass-panel flex items-center gap-3 translate-y-4 pointer-events-none">

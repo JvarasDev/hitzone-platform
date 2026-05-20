@@ -1,0 +1,14 @@
+This document outlines the **Hitboxking project's microservices architecture**, designed for enhanced scalability, fault isolation, and decoupled development, moving away from a traditional monolith.
+
+Its infrastructure layer, managed by Docker, includes:
+*   **PostgreSQL**: Configured with five independent databases (e.g., `db_hitbox_auth`, `db_hitbox_main`), adhering to the "database per service" principle, and initialized via `init-db.sql`.
+*   **Kafka Ecosystem**: Comprising Zookeeper and Kafka, implementing an event-driven architecture for rapid, asynchronous microservice communication.
+
+The core backbone consists of Spring Cloud services:
+*   **Config Server (8888)**: Centralizes all system configurations.
+*   **Eureka Server (8761)**: Acts as a service registry (discovery service) for microservices.
+*   **API Gateway (8080)**: The single entry point for external clients, responsible for intelligent routing (via Eureka), centralized security (CORS, JWT interception), and load balancing.
+
+An example business microservice, **MS-Auth (8081)**, handles user authentication, RBAC, password encryption, and JWT tokenization, connecting to its dedicated `db_hitbox_auth`.
+
+A strict, phased startup sequence is crucial for deployment: first the Docker infrastructure (PostgreSQL, Kafka), then the core Spring Cloud services (Config, Eureka, Gateway), and finally the business logic microservices (like MS-Auth).

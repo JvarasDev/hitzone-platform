@@ -5,7 +5,7 @@ spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/db_hitbox_auth
     username: postgres
-    password: HitzonePassword123!
+    password: ${DB_PASSWORD:HitzonePassword123!}
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:

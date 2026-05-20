@@ -33,4 +33,8 @@ public interface WeaponRepository extends JpaRepository<Weapon,Long> {
     @Query("SELECT w FROM Weapon w WHERE w.price >= :min AND w.price <= :max")
     List<Weapon> findByPriceRange(@Param("min") Integer min, @Param("max") Integer max);
 
+    @Query("SELECT w.category AS category, COUNT(w) AS count " +
+           "FROM Weapon w GROUP BY w.category ORDER BY COUNT(w) DESC")
+    List<Object[]> countByCategory();
+
 }

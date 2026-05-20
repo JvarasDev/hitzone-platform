@@ -3,6 +3,7 @@ package cl.hitzone.ms_agents.controller;
 import cl.hitzone.ms_agents.dto.AbilityDTO;
 import cl.hitzone.ms_agents.dto.AgentRequestDTO;
 import cl.hitzone.ms_agents.dto.AgentResponseDTO;
+import cl.hitzone.ms_agents.model.AgentRole;
 import cl.hitzone.ms_agents.service.AgentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/agents")
@@ -32,6 +34,16 @@ public class AgentController {
     @GetMapping("/{id}/abilities")
     public ResponseEntity<List<AbilityDTO>> getAgentAbilities(@PathVariable Long id) {
         return ResponseEntity.ok(agentService.getAgentAbilities(id));
+    }
+
+    @GetMapping("/role/{role}")
+    public ResponseEntity<List<AgentResponseDTO>> getAgentsByRole(@PathVariable AgentRole role) {
+        return ResponseEntity.ok(agentService.getAgentsByRole(role));
+    }
+
+    @GetMapping("/stats/by-role")
+    public ResponseEntity<Map<AgentRole, Long>> getAgentCountByRole() {
+        return ResponseEntity.ok(agentService.getAgentCountByRole());
     }
 
     @PostMapping

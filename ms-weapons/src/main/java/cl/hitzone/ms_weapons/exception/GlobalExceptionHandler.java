@@ -1,5 +1,6 @@
 package cl.hitzone.ms_weapons.exception;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -7,57 +8,50 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.time.LocalDateTime;
+import java.util.stream.Collectors;
 
-// @RestControllerAdvice le dice a Spring que esta clase actuará como un interceptor global de excepciones
-// para todos los controladores (@RestController). Esto centraliza el manejo de errores.
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    // 1. Maneja casos donde no encontramos un arma.
-    // @ExceptionHandler se dispara automáticamente cuando un controlador lanza ResourceNotFoundException.
-    // Retorna status HTTP 404 NOT_FOUND.
     @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<Map<String, String>> handleResourceNotFoundException(ResourceNotFoundException ex) {
-        Map<String, String> response = new HashMap<>();
-        response.put("error", ex.getMessage());
-        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    public ResponseEntity<ApiError> handleNotFound(ResourceNotFoundException ex, HttpServletRequest req) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                new ApiError(LocalDateTime.now(), 404, "Not Found", ex.getMessage(), req.getRequestURI()));
     }
 
-    // 2. Maneja casos de colisión de datos, como intentar crear un arma con un nombre que ya existe.
-    // Retorna status HTTP 409 CONFLICT.
     @ExceptionHandler(DuplicateResourceException.class)
-    public ResponseEntity<Map<String, String>> handleDuplicateResourceException(DuplicateResourceException ex) {
-        Map<String, String> response = new HashMap<>();
-        response.put("error", ex.getMessage());
-        return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+    public ResponseEntity<ApiError> handleConflict(DuplicateResourceException ex, HttpServletRequest req) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(
+                new ApiError(LocalDateTime.now(), 409, "Conflict", ex.getMessage(), req.getRequestURI()));
     }
 
-    // 3. Maneja los errores de validación (@Valid) provenientes de los DTOs.
-    // Se dispara cuando falla alguna regla como @NotNull o @Min.
-    // Retorna status HTTP 400 BAD_REQUEST y un mapa de los campos con sus respectivos errores.
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Map<String, String>> handleValidationExceptions(MethodArgumentNotValidException ex) {
-        Map<String, String> errors = new HashMap<>();
-        
-        // Iteramos por todos los errores recolectados por Spring Validation
-        ex.getBindingResult().getAllErrors().forEach((error) -> {
-            String fieldName = ((FieldError) error).getField(); // Nombre de la propiedad en el DTO (ej: 'price')
-            String errorMessage = error.getDefaultMessage();    // El mensaje de error (ej: 'Price must be at least 0')
-            errors.put(fieldName, errorMessage);
-        });
-        
-        return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+    public ResponseEntity<ApiError> handleValidation(
+            MethodArgumentNotValidException ex,
+            HttpServletRequest request) {
+
+        String message = ex.getBindingResult()
+            .getFieldErrors()
+            .stream()
+            .map(error -> error.getField() + ": " + error.getDefaultMessage())
+            .collect(Collectors.joining(", "));
+
+        ApiError apiError = ApiError.builder()
+            .timestamp(LocalDateTime.now())
+            .status(400)
+            .error("Bad Request")
+            .message(message)
+            .path(request.getRequestURI())
+            .build();
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiError);
     }
 
-    // 4. Captura cualquier otra excepción no manejada específicamente arriba (fallback).
-    // Evita que la aplicación crashee mostrando la traza de error en crudo al cliente.
-    // Retorna status HTTP 500 INTERNAL_SERVER_ERROR.
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<Map<String, String>> handleGlobalException(Exception ex) {
-        Map<String, String> response = new HashMap<>();
-        response.put("error", "Ha ocurrido un error interno en el servidor: " + ex.getMessage());
-        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+    public ResponseEntity<ApiError> handleGeneric(Exception ex, HttpServletRequest req) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
+                new ApiError(LocalDateTime.now(), 500, "Internal Server Error",
+                        "Ha ocurrido un error interno en el servidor.", req.getRequestURI()));
     }
 }

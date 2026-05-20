@@ -217,14 +217,22 @@
                         <h2 class="text-2xl font-bold">Top Rankings</h2>
                         <p class="text-gray-400 text-sm mt-1">Los mejores jugadores de la plataforma.</p>
                     </div>
-                    <!-- Botón solo visible para ADMIN, controlado por JS -->
-                    
+                    <div id="adminActionContainer"></div>
                 </div>
                 
                 <div class="glass-card overflow-hidden">
                     <table class="w-full text-left fintoc-table">
-                        <thead class="bg-black/40"><tr><th class="pl-6 pt-4 pb-4">Próximamente</th></tr></thead>
-                        <tbody id="mainTableBody" class="px-6"><tr><td class="pl-6 py-8 text-gray-400">Contenido en construcción...</td></tr></tbody>
+                        <thead class="bg-black/40">
+                            <tr>
+                                <th class="pl-6 pt-4 pb-4">Jugador</th>
+                                <th class="pt-4 pb-4">Rango</th>
+                                <th class="pt-4 pb-4">Total RR</th>
+                                <th class="pt-4 pb-4 text-right pr-6">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="rankingsTableBody">
+                            <!-- Populated by JS -->
+                        </tbody>
                     </table>
                 </div>
 
@@ -234,58 +242,40 @@
 
 
 
-    <!-- Modal Arma -->
-    <div id="weaponModal" class="fixed inset-0 z-50 flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
-        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" onclick="closeWeaponModal()"></div>
-        <div class="glass-panel w-full max-w-md p-8 rounded-[2rem] relative transform scale-95 transition-transform duration-300" id="weaponModalContent">
-            <h3 id="weaponModalTitle" class="text-2xl font-bold mb-2">Nueva Arma</h3>
-            <p class="text-sm text-gray-400 mb-6">Registra las características del arma.</p>
+    <!-- Modal Rank -->
+    <div id="rankModal" class="fixed inset-0 z-50 flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" onclick="closeRankModal()"></div>
+        <div class="glass-panel w-full max-w-md p-8 rounded-[2rem] relative transform scale-95 transition-transform duration-300" id="rankModalContent">
+            <h3 id="rankModalTitle" class="text-2xl font-bold mb-2">Ajustar Rango</h3>
+            <p class="text-sm text-gray-400 mb-6">Modifica el rango y RR del jugador.</p>
             
-            <form id="weaponForm" class="space-y-4">
-                <input type="hidden" id="weaponId">
+            <form id="rankForm" class="space-y-4">
+                <input type="hidden" id="rankUsername">
                 <div class="grid grid-cols-2 gap-4">
                     <div class="space-y-1.5 col-span-2">
-                        <label class="text-xs font-semibold text-gray-400 ml-1 uppercase">Nombre</label>
-                        <input type="text" id="weaponName" class="input-apple w-full px-4 py-3 rounded-xl text-white" required placeholder="Ej: Vandal">
-                    </div>
-
-                    <div class="space-y-1.5">
-                        <label class="text-xs font-semibold text-gray-400 ml-1 uppercase">Categoría</label>
-                        <select id="weaponCategory" class="input-apple w-full px-4 py-3 rounded-xl text-white appearance-none" required>
-                            <option value="" disabled selected>Categoría</option>
-                            <option value="RIFLE">Rifle</option>
-                            <option value="SNIPER">Sniper</option>
-                            <option value="SMG">SMG</option>
-                            <option value="PISTOL">Pistol</option>
-                            <option value="HEAVY">Heavy</option>
-                            <option value="SHOTGUN">Shotgun</option>
-                            <option value="MELEE">Melee</option>
+                        <label class="text-xs font-semibold text-gray-400 ml-1 uppercase">Rango</label>
+                        <select id="rankTier" class="input-apple w-full px-4 py-3 rounded-xl text-white appearance-none" required>
+                            <option value="UNRANKED">Unranked</option>
+                            <option value="IRON">Iron</option>
+                            <option value="BRONZE">Bronze</option>
+                            <option value="SILVER">Silver</option>
+                            <option value="GOLD">Gold</option>
+                            <option value="PLATINUM">Platinum</option>
+                            <option value="DIAMOND">Diamond</option>
+                            <option value="ASCENDANT">Ascendant</option>
+                            <option value="IMMORTAL">Immortal</option>
+                            <option value="RADIANT">Radiant</option>
                         </select>
                     </div>
 
-                    <div class="space-y-1.5">
-                        <label class="text-xs font-semibold text-gray-400 ml-1 uppercase">Precio</label>
-                        <input type="number" id="weaponPrice" class="input-apple w-full px-4 py-3 rounded-xl text-white" required min="0" max="10000" placeholder="Ej: 2900">
-                    </div>
-
-                    <div class="space-y-1.5">
-                        <label class="text-xs font-semibold text-gray-400 ml-1 uppercase">Daño</label>
-                        <input type="number" id="weaponDamage" step="0.1" class="input-apple w-full px-4 py-3 rounded-xl text-white" required min="0" placeholder="Ej: 40">
-                    </div>
-
-                    <div class="space-y-1.5">
-                        <label class="text-xs font-semibold text-gray-400 ml-1 uppercase">Fire Rate</label>
-                        <input type="number" id="weaponFireRate" step="0.1" class="input-apple w-full px-4 py-3 rounded-xl text-white" required min="0" placeholder="Ej: 9.75">
-                    </div>
-
                     <div class="space-y-1.5 col-span-2">
-                        <label class="text-xs font-semibold text-gray-400 ml-1 uppercase">Tamaño Cargador</label>
-                        <input type="number" id="weaponMagazine" class="input-apple w-full px-4 py-3 rounded-xl text-white" required min="0" placeholder="Ej: 25">
+                        <label class="text-xs font-semibold text-gray-400 ml-1 uppercase">RR Points (0-100+)</label>
+                        <input type="number" id="rankRR" class="input-apple w-full px-4 py-3 rounded-xl text-white" required min="0" placeholder="Ej: 50">
                     </div>
                 </div>
 
                 <div class="pt-6 flex gap-3">
-                    <button type="button" onclick="closeWeaponModal()" class="flex-1 py-3.5 rounded-xl font-semibold text-white bg-white/5 hover:bg-white/10 transition-colors">
+                    <button type="button" onclick="closeRankModal()" class="flex-1 py-3.5 rounded-xl font-semibold text-white bg-white/5 hover:bg-white/10 transition-colors">
                         Cancelar
                     </button>
                     <button type="submit" class="flex-1 btn-primary py-3.5 rounded-xl font-semibold text-white shadow-xl">
