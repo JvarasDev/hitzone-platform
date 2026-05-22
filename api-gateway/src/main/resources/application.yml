@@ -64,6 +64,13 @@ spring:
           predicates:
             - Path=/api/v1/rank/**
 
+        - id: ms-ranks-route
+          uri: lb://ms-rank
+          predicates:
+            - Path=/api/v1/ranks, /api/v1/ranks/**
+          filters:
+            - RewritePath=/api/v1/ranks/?(?<segment>.*), /api/v1/rank/${segment}
+
 eureka:
   client:
     serviceUrl:

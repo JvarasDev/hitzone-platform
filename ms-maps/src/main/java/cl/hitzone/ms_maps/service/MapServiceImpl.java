@@ -11,6 +11,7 @@ import cl.hitzone.ms_maps.exception.ResourceNotFoundException;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -133,5 +134,15 @@ public class MapServiceImpl implements MapService {
                 mapa.getTotalSite(),
                 mapa.isActive()
         );
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Map<String, Long> countMapsByDifficulty() {
+        return mapRepository.countByDifficulty().stream()
+                .collect(Collectors.toMap(
+                        result -> result[0] != null ? result[0].toString() : "UNKNOWN",
+                        result -> (Long) result[1]
+                ));
     }
 }

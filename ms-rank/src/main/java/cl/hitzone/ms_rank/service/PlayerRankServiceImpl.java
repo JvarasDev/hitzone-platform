@@ -2,16 +2,19 @@ package cl.hitzone.ms_rank.service;
 
 import cl.hitzone.ms_rank.dto.PlayerRankRequestDTO;
 import cl.hitzone.ms_rank.dto.PlayerRankResponseDTO;
+import cl.hitzone.ms_rank.dto.RankDistributionDTO;
 import cl.hitzone.ms_rank.model.PlayerRank;
 import cl.hitzone.ms_rank.repository.PlayerRankRepository;
+import cl.hitzone.ms_rank.exception.ResourceNotFoundException;
+import cl.hitzone.ms_rank.exception.DuplicateResourceException;
+
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
-
-import cl.hitzone.ms_rank.exception.ResourceNotFoundException;
-import cl.hitzone.ms_rank.exception.DuplicateResourceException;
 
 @Service
 public class PlayerRankServiceImpl implements PlayerRankService {
@@ -23,6 +26,8 @@ public class PlayerRankServiceImpl implements PlayerRankService {
     }
 
     // ─── GET ALL (ordenado por RR desc) ───────────────────────────
+    @Override
+    @Transactional(readOnly = true)
     public List<PlayerRankResponseDTO> getAllRanks() {
         return playerRankRepository.findAll(Sort.by(Sort.Direction.DESC, "rrPoints"))
                 .stream()
@@ -31,6 +36,8 @@ public class PlayerRankServiceImpl implements PlayerRankService {
     }
 
     // ─── GET BY USERNAME ──────────────────────────────────────────
+    @Override
+    @Transactional(readOnly = true)
     public PlayerRankResponseDTO getRankByUsername(String username) {
         PlayerRank player = playerRankRepository.findByUsername(username)
                 .orElseThrow(() -> new ResourceNotFoundException("Jugador no encontrado: " + username));
@@ -38,6 +45,8 @@ public class PlayerRankServiceImpl implements PlayerRankService {
     }
 
     // ─── CREATE ───────────────────────────────────────────────────
+    @Override
+    @Transactional
     public PlayerRankResponseDTO createRank(PlayerRankRequestDTO dto) {
         if (playerRankRepository.existsByUsername(dto.getUsername())) {
             throw new DuplicateResourceException("El username ya existe: " + dto.getUsername());
@@ -56,6 +65,8 @@ public class PlayerRankServiceImpl implements PlayerRankService {
     }
 
     // ─── UPDATE ───────────────────────────────────────────────────
+    @Override
+    @Transactional
     public PlayerRankResponseDTO updateRank(String username, PlayerRankRequestDTO dto) {
         PlayerRank player = playerRankRepository.findByUsername(username)
                 .orElseThrow(() -> new ResourceNotFoundException("Jugador no encontrado: " + username));
@@ -71,10 +82,42 @@ public class PlayerRankServiceImpl implements PlayerRankService {
     }
 
     // ─── DELETE ───────────────────────────────────────────────────
+    @Override
+    @Transactional
     public void deleteRank(String username) {
         PlayerRank player = playerRankRepository.findByUsername(username)
                 .orElseThrow(() -> new ResourceNotFoundException("Jugador no encontrado: " + username));
         playerRankRepository.delete(player);
+    }
+
+    // ─── REPORT 1: GET TOP N PLAYERS ──────────────────────────────
+    @Override
+    @Transactional(readOnly = true)
+    public List<PlayerRankResponseDTO> getTopPlayers(int count) {
+        return playerRankRepository.findAll(PageRequest.of(0, count, Sort.by(Sort.Direction.DESC, "rrPoints")))
+                .getContent()
+                .stream()
+                .map(PlayerRankResponseDTO::new)
+                .collect(Collectors.toList());
+    }
+
+    // ─── REPORT 2: GET RANK DISTRIBUTION ─────────────────────────
+    @Override
+    @Transactional(readOnly = true)
+    public List<RankDistributionDTO> getRankDistribution() {
+        return playerRankRepository.getRankDistribution().stream()
+                .map(result -> new RankDistributionDTO((String) result[0], (Long) result[1]))
+                .collect(Collectors.toList());
+    }
+
+    // ─── REPORT 3: SEARCH PLAYERS ────────────────────────────────
+    @Override
+    @Transactional(readOnly = true)
+    public List<PlayerRankResponseDTO> searchPlayersByUsername(String username) {
+        return playerRankRepository.findByUsernameContainingIgnoreCase(username, Sort.by(Sort.Direction.ASC, "username"))
+                .stream()
+                .map(PlayerRankResponseDTO::new)
+                .collect(Collectors.toList());
     }
 
     // ─── Lógica de ranking ────────────────────────────────────────

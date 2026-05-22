@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
+import java.util.LinkedHashMap;
 import java.util.stream.Collectors;
 
 @Service
@@ -21,6 +23,7 @@ public class AuditLogServiceImpl implements AuditLogService {
 
     // POST /api/v1/audit — Registrar un nuevo evento
     @Transactional
+    @Override
     public AuditLogResponseDTO registrarEvento(AuditLogRequestDTO requestDTO) {
         AuditLog log = new AuditLog();
         log.setServiceName(requestDTO.getServiceName());
@@ -40,6 +43,7 @@ public class AuditLogServiceImpl implements AuditLogService {
 
     // GET /api/v1/audit — Listar todos los logs
     @Transactional(readOnly = true)
+    @Override
     public List<AuditLogResponseDTO> listarTodos() {
         return auditLogRepository.findAll()
                 .stream()
@@ -49,6 +53,7 @@ public class AuditLogServiceImpl implements AuditLogService {
 
     // GET /api/v1/audit/service/{name} — Filtrar por microservicio
     @Transactional(readOnly = true)
+    @Override
     public List<AuditLogResponseDTO> listarPorServicio(String serviceName) {
         return auditLogRepository.findByServiceName(serviceName)
                 .stream()
@@ -58,6 +63,7 @@ public class AuditLogServiceImpl implements AuditLogService {
 
     // GET /api/v1/audit/user/{username} — Filtrar por usuario
     @Transactional(readOnly = true)
+    @Override
     public List<AuditLogResponseDTO> listarPorUsuario(String username) {
         return auditLogRepository.findByUsername(username)
                 .stream()
@@ -78,5 +84,17 @@ public class AuditLogServiceImpl implements AuditLogService {
                 log.getStatus(),
                 log.getCreatedAt()
         );
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Map<String, Long> countLogsByAction() {
+        return auditLogRepository.countByAction().stream()
+                .collect(Collectors.toMap(
+                        result -> result[0] != null ? result[0].toString() : "UNKNOWN",
+                        result -> (Long) result[1],
+                        (oldValue, newValue) -> oldValue,
+                        LinkedHashMap::new
+                ));
     }
 }

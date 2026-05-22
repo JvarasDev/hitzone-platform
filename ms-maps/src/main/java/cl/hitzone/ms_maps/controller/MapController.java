@@ -11,6 +11,7 @@ import jakarta.validation.Valid;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/maps")
@@ -64,5 +65,10 @@ public class MapController {
     public ResponseEntity<Void> deleteMap(@PathVariable Long id) {
         mapService.deleteMap(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/stats/by-difficulty")
+    public ResponseEntity<Map<String, Long>> getMapsCountByDifficulty() {
+        return ResponseEntity.ok(mapService.countMapsByDifficulty());
     }
 }

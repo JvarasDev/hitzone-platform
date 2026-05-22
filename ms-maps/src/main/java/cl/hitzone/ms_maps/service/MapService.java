@@ -6,6 +6,7 @@ import cl.hitzone.ms_maps.model.typeMaps;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 public interface MapService {
     MapResponseDTO createMap(MapRequestDTO requestDTO);
@@ -16,4 +17,6 @@ public interface MapService {
     List<MapResponseDTO> filterMaps(Collection<typeMaps> allowedTypes);
     MapResponseDTO updateMap(Long id, MapRequestDTO requestDTO);
     void deleteMap(Long id);
+    Map<String, Long> countMapsByDifficulty();
 }
+

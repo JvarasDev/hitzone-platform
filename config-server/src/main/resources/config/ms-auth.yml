@@ -9,7 +9,7 @@ spring:
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
     show-sql: true
   # Fail-fast: el microservicio fallará rápido si el config-server no está disponible
   cloud:
@@ -22,7 +22,7 @@ server:
 
 # JWT settings
 jwt:
-  secret: hitzone-super-secret-key-2026
+  secret: hitzone-super-secret-key-2026-must-be-at-least-32-chars
   expiration-ms: 86400000   # 24 horas
 
 eureka:

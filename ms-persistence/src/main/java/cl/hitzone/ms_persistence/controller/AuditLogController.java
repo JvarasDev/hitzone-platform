@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/audit")
@@ -46,6 +47,11 @@ public class AuditLogController {
     public ResponseEntity<List<AuditLogResponseDTO>> listarPorUsuario(
             @PathVariable String username) {
         return ResponseEntity.ok(auditLogService.listarPorUsuario(username));
+    }
+
+    @GetMapping("/stats/by-action")
+    public ResponseEntity<Map<String, Long>> getLogsCountByAction() {
+        return ResponseEntity.ok(auditLogService.countLogsByAction());
     }
 }
 

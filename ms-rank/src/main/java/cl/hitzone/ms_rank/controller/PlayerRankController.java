@@ -2,6 +2,7 @@ package cl.hitzone.ms_rank.controller;
 
 import cl.hitzone.ms_rank.dto.PlayerRankRequestDTO;
 import cl.hitzone.ms_rank.dto.PlayerRankResponseDTO;
+import cl.hitzone.ms_rank.dto.RankDistributionDTO;
 import cl.hitzone.ms_rank.service.PlayerRankService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -50,5 +51,23 @@ public class PlayerRankController {
     public ResponseEntity<Void> deleteRank(@PathVariable String username) {
         playerRankService.deleteRank(username);
         return ResponseEntity.noContent().build();
+    }
+
+    // ─── REPORT 1: GET TOP N PLAYERS ──────────────────────────────
+    @GetMapping("/top/{count}")
+    public ResponseEntity<List<PlayerRankResponseDTO>> getTopPlayers(@PathVariable int count) {
+        return ResponseEntity.ok(playerRankService.getTopPlayers(count));
+    }
+
+    // ─── REPORT 2: GET RANK DISTRIBUTION ─────────────────────────
+    @GetMapping("/distribution")
+    public ResponseEntity<List<RankDistributionDTO>> getRankDistribution() {
+        return ResponseEntity.ok(playerRankService.getRankDistribution());
+    }
+
+    // ─── REPORT 3: SEARCH PLAYERS ────────────────────────────────
+    @GetMapping("/search")
+    public ResponseEntity<List<PlayerRankResponseDTO>> searchPlayersByUsername(@RequestParam("username") String username) {
+        return ResponseEntity.ok(playerRankService.searchPlayersByUsername(username));
     }
 }

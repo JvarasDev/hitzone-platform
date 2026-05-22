@@ -1,15 +1,4 @@
-server:
-  port: 8087
-
 spring:
-  application:
-    name: ms-matches
-  config:
-    import: "optional:configserver:"
-  cloud:
-    openfeign:
-      circuitbreaker:
-        enabled: true
   datasource:
     url: jdbc:postgresql://localhost:5432/db_hitzone_matches
     username: postgres
@@ -22,15 +11,16 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
-
   flyway:
     enabled: true
     baseline-on-migrate: true
     locations: classpath:db/migration
-
+    validate-on-migrate: true
 eureka:
   client:
-    serviceUrl:
+    service-url:
       defaultZone: http://localhost:8761/eureka/
   instance:
     prefer-ip-address: true
+server:
+  port: 8087
