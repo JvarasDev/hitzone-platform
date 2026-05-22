@@ -92,7 +92,7 @@ Una vez que el Gateway y Eureka estén operando, puedes levantar los siguientes 
 ---
 
 ## 📚 Documentación Adicional
-Para profundizar en la arquitectura, diagramas de flujo, endpoints analíticos y preguntas frecuentes de defensa técnica, revisa la **[Guía Maestra de Arquitectura (GUIA_DEFENSA_HITZONE.md)](GUIA_DEFENSA_HITZONE.md)** incluida en la raíz del proyecto.
+Para profundizar en la arquitectura, diagramas de flujo, endpoints analíticos y preguntas frecuentes de defensa técnica, revisa la **[Guía del proyecto (Onboarding_hitzone.md)](Onboarding_hitzone.md)** incluida en la raíz del proyecto.
 
 ---
 
