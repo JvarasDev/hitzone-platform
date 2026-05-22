@@ -23,8 +23,6 @@ El presente documento constituye la guía definitiva para comprender, operar y d
 | **`ms-matches`** | 8088 | `db_hitbox_matches` | Historial de partidas y métricas. | `Match`, `MatchPlayer` | 10 | 5 |
 
 ### 1.3 Diagrama de Arquitectura General
-
-```mermaid
 graph TD
     Client[Cliente / Postman] -->|HTTPS| Gateway(api-gateway :8080)
     
@@ -34,9 +32,9 @@ graph TD
         Config(config-server :8888)
     end
     
-    Gateway -.-\>|Discovery| Eureka
-    Config -.-\>|Inyección YAML| Auth
-    Config -.-\>|Inyección YAML| Matches
+    Gateway -.->|Discovery| Eureka
+    Config -.->|Inyección YAML| Auth
+    Config -.->|Inyección YAML| Matches
     
     subgraph Ecosistema de Negocio
         Auth[ms-auth :8081]
@@ -68,7 +66,7 @@ graph TD
     Ranks --> DB6[(db_hitbox_ranks)]
     News --> DB7[(db_hitbox_news)]
     Matches --> DB8[(db_hitbox_matches)]
-```
+****
 
 ### 1.4 Principios de Diseño Aplicados
 * **Patrón CSR (Controller-Service-Repository):** Separa el transporte, la lógica de negocio y el acceso a datos para lograr alta cohesión y bajo acoplamiento.
